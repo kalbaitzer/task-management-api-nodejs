@@ -17,8 +17,8 @@ POST http://localhost:3000/api/users
 Content-Type: application/json
 
 {
-  "name": "User 4",
-  "email": "user4@gmail.com",
+  "name": "User 1",
+  "email": "user1@gmail.com",
   "role": "User"
 }
 
@@ -28,7 +28,7 @@ GET http://localhost:3000/api/users
 
 ###
 
-GET http://localhost:3000/api/users/9a61522c-e5a4-47a7-b52c-9507aa72e4f2
+GET http://localhost:3000/api/users/e888710c-5e56-457b-8703-3ca975a9c3b3
 
 ###
 

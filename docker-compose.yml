@@ -1,0 +1,26 @@
+# Configuração do container para o ambiente (computador) de desenvolvimento
+
+services:
+  # Serviço da API Node.js
+  app:
+    build: .  # Constrói a imagem a partir do Dockerfile no diretório atual
+    container_name: task-management-api-nodejs
+    ports:
+      - "3000:3000" # Mapeia a porta 3000 do contêiner para a porta 3000 da sua máquina
+    env_file:
+      - .env.docker # Carrega as variáveis de ambiente do arquivo .env
+    depends_on:
+      - mongo       # Garante que o contêiner do MongoDB inicie antes da API
+
+  # Serviço do Banco de Dados MongoDB
+  mongo:
+    image: mongo:latest # Usa a imagem oficial mais recente do MongoDB
+    container_name: mongodb
+    ports:
+      - "27017:27017" # Mapeia a porta padrão do MongoDB
+    volumes:
+      - mongo-data:/data/db # Cria um volume para persistir os dados do banco
+
+# Define o volume para persistência de dados do MongoDB
+volumes:
+  mongo-data:
