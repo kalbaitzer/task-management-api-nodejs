@@ -153,7 +153,7 @@ Esta é a maneira mais simples e recomendada de executar toda a aplicação.
    A aplicação irá iniciar, e as migrações do banco de dados serão aplicadas automaticamente na primeira inicialização, criando todas as tabelas.
 
 4. **Acesso à API**: A api está disponível em:
-   **[http://localhost:5000/](http://localhost:3000/)**
+   **[http://localhost:3000/](http://localhost:3000/)**
 
 5. **Publicação no Docker Hub**: Para publicar no Docker Hub é necessário apenas o contêiner da API, pois o Docker baixa automaticmente a imagem do banco de dados (`PostgreSQL`) quando for executado em outros computadores. Para a publicação é necessário a execução dos seguintes comandos através do terminal, na raiz do projeto:
    ```bash
