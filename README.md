@@ -76,7 +76,7 @@ Esta é a maneira mais simples e recomendada de executar toda a aplicação.
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado e em execução.
 
 ### Passos
-1. **Criação do arquivo `Dockerfile`**: Na raiz do projeto, crie um arquivo com nome `Dockerfile` com o seguinte conteúdo:
+1. **Criação do arquivo Dockerfile**: Na raiz do projeto, crie um arquivo com nome `Dockerfile` com o seguinte conteúdo:
    ```yaml
       # ---- Estágio de Build ----
       # Use uma imagem oficial do Node.js como base. A versão alpine é leve.
@@ -114,7 +114,7 @@ Esta é a maneira mais simples e recomendada de executar toda a aplicação.
    ```
    Este arquivo está disponível na raiz do projeto.
 
-2. **Criação do arquivo `docker-compose.yml`**: Na raiz do projeto, crie um arquivo `docker-compose.yml` com o seguinte conteúdo:
+2. **Criação do arquivo docker-compose.yml**: Na raiz do projeto, crie um arquivo `docker-compose.yml` com o seguinte conteúdo:
    ```yaml
       # Configuração do container para o ambiente (computador) de desenvolvimento
 
