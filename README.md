@@ -317,19 +317,9 @@ Planejar integrações desde cedo pode influenciar o design da API, tornando-a m
 ### 1. Arquitetura e Design de Código
 O objetivo aqui é melhorar a manutenibilidade e a clareza do código à medida que o sistema cresce.
 
-- **Implementar o Padrão CQRS (Command Query Responsibility Segregation):**
-
-   - Atualmente, nossos Services fazem tudo: leem dados, validam, e escrevem dados. `CQRS` sugere separar as operações de escrita (`Commands`) das operações de leitura (`Queries`).
-
-   - O modelo que você precisa para criar ou atualizar uma tarefa (com validações, entidades ricas) é muito diferente do modelo que você precisa para simplesmente listar tarefas (um DTO "achatado" e otimizado para leitura). Separar isso simplifica radicalmente a lógica.
-
-   - Usando uma biblioteca como a MediatR, que é quase um padrão de facto em projetos .NET modernos para implementar `CQRS` e outros padrões de mensageria interna.
-
 - **Automatizar o Mapeamento de Objetos com AutoMapper:**
 
-   - No momento, nós mapeamos manualmente as entidades para DTOs nos nossos serviços (ex: new TaskDto { Id = taskEntity.Id, ... }).
-
-   - Isso é repetitivo e propenso a erros. Se você adicionar um campo na entidade e no DTO, pode se esquecer de adicioná-lo no mapeamento. O `AutoMapper` é uma biblioteca que automatiza essa conversão com base em convenções.
+   - As entidades são mapeadas manualmente e isso é repetitivo e propenso a erros. Se você adicionar um campo na entidade, pode se esquecer de adicioná-lo no mapeamento. O `AutoMapper` é uma biblioteca que automatiza essa conversão com base em convenções.
 
    - Você define "perfis" de mapeamento uma vez (ex: "mapeie TaskEntity para TaskDto") e depois, no serviço, o código se resume a uma única linha: _mapper.Map<TaskDto>(taskEntity).
 
@@ -346,9 +336,7 @@ Já temos testes de unidade, o que é excelente. O próximo passo é garantir qu
 
    - São testes que verificam se as diferentes camadas da nossa aplicação funcionam juntas. O teste principal seria iniciar uma versão em memória da nossa API e fazer chamadas HTTP reais aos controllers.
 
-   - Isso nos permite testar o fluxo completo: `Controller` -> `Service` -> `Repository` -> `Banco de Dados` (em memória ou um de teste). É a melhor forma de testar a autorização baseada em headers, o roteamento e a serialização JSON.
-
-   - Usando a classe `WebApplicationFactory` do `ASP.NET Core`, que é projetada especificamente para este fim.
+   - Isso nos permite testar o fluxo completo: `Controller` -> `Service` -> `Model` -> `Banco de Dados` (em memória ou um de teste). É a melhor forma de testar a autorização baseada em headers, o roteamento e a serialização JSON.
 
 ### 3. Performance e Escalabilidade
 À medida que o número de usuários e dados cresce, precisamos garantir que a API continue rápida.
@@ -390,7 +378,7 @@ Nosso docker-compose é ótimo para desenvolvimento e para rodar em uma única m
 
 - **Banco de Dados como Serviço Gerenciado (PaaS):**
 
-   - Em vez de rodar o `PostgreSQL` em um contêiner Docker em produção (o que exige gerenciamento de backups, atualizações, segurança, etc.), usamos um serviço gerenciado como o `Azure Database for PostgreSQL` ou o `Amazon RDS`.
+   - Em vez de rodar o `MongoDB` em um contêiner Docker em produção (o que exige gerenciamento de backups, atualizações, segurança, etc.), usamos um serviço gerenciado como o `Azure Cosmos DB for MongoDB` ou o `Amazon RDS`.
 
    - É muito mais seguro, confiável e escalável. O provedor de nuvem cuida de toda a complexidade da infraestrutura do banco de dados para você.
 
