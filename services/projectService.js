@@ -72,7 +72,7 @@ exports.deleteProject = async (userId, projectId) => {
   if (hasActiveTasks) {
 
     // Lança uma exceção de regrade negócio
-      throw new Error("Não é possível remover o projeto. Existem tarefas pendentes ou em andamento. Conclua ou remova as tarefas primeiro.");
+    throw new Error("Não é possível remover o projeto. Existem tarefas pendentes ou em andamento. Conclua ou remova as tarefas primeiro.");
   }
 
   const tasksToDelete = await Task.find({ projectId: projectId }).select('_id');

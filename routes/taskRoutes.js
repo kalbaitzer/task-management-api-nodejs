@@ -29,12 +29,12 @@ router.patch('/:id/status', taskController.updateTaskStatus);
 // POST /api/tasks/:id/comments
 router.post('/:id/comments', taskController.addComment);
 
-// Rota para remover uma tarefa por ID
-// DELETE /api/tasks/:id
-router.delete('/:id', taskController.deleteTask);
-
 // Rota para buscar o histórico completo de uma tarefa
 // GET /api/tasks/:id/history
 router.get('/:id/history', taskController.getTaskHistory);
+
+// Rota para remover uma tarefa por ID
+// DELETE /api/tasks/:id
+router.delete('/:id', taskController.deleteTask);
 
 module.exports = router;

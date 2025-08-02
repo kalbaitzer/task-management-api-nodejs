@@ -14,7 +14,7 @@ exports.checkUser = async (id) => {
 
   const user = await User.findById(id);
 
-  if (!user){
+  if (!user) {
     throw new Error("Usuário não cadastrado.");
   }
   
@@ -26,7 +26,7 @@ exports.checkProject = async (id) => {
 
   const project = await Project.findById(id);
 
-  if (!project){
+  if (!project) {
     throw new Error("Projeto não cadastrado.");
   }
   
@@ -38,7 +38,7 @@ exports.checkTask = async (id) => {
 
   const task = await Task.findById(id);
 
-  if (!task){
+  if (!task) {
     throw new Error("Tarefa não cadastrada.");
   }
   
@@ -50,7 +50,7 @@ exports.checkManager = async (id) => {
 
   const user = await User.findById(id);
 
-  if (!user){
+  if (!user) {
     if (user.Role != "Manager") {
       throw new Error("Você não tem permissão para acessar este relatório.");
     }
