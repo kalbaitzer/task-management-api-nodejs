@@ -5,8 +5,8 @@ services:
   # Serviço da API Node.js, baixado do Docker Hub
   app:
     # O Docker irá baixar esta imagem automaticamente se ela não existir localmente.
-    image: kalbaitzer/task-management-api-nodejs:1.0.0
     container_name: task-management-api-nodejs
+    image: kalbaitzer/task-management-api-nodejs:1.0
     ports:
       - "3000:3000"          # Mapeia a porta 3000 do contêiner para a porta 3000 da sua máquina
     env_file:

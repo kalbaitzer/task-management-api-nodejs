@@ -48,7 +48,7 @@ DELETE http://localhost:3000/api/users/b03f0f94-468d-475d-a08f-98b2bcd859fb
 
 ### createProject
 POST http://localhost:3000/api/projects
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
 Content-Type: application/json
 
 {
@@ -58,7 +58,7 @@ Content-Type: application/json
 
 ### createProject
 POST http://localhost:3000/api/projects
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
 Content-Type: application/json
 
 {
@@ -68,7 +68,7 @@ Content-Type: application/json
 
 ### getAllProjects
 GET http://localhost:3000/api/projects
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+X-User-Id: 890ba404-71f3-4d43-b429-cae7d5551f98
 
 ### getProjectById
 GET http://localhost:3000/api/projects/dbdfb55b-41a2-43a1-9544-96911df062aa
