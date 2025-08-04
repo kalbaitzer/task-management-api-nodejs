@@ -1,5 +1,7 @@
-// Definição das rotas da API de Projetos
-// src/routes/protectRoutes.js
+/**
+ * Definição das rotas da API de Projetos
+ * src/routes/protectRoutes.js
+ */
 
 const express = require('express');
 const router = express.Router();

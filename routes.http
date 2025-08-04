@@ -48,7 +48,7 @@ DELETE http://localhost:3000/api/users/b03f0f94-468d-475d-a08f-98b2bcd859fb
 
 ### createProject
 POST http://localhost:3000/api/projects
-X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 Content-Type: application/json
 
 {
@@ -58,21 +58,21 @@ Content-Type: application/json
 
 ### createProject
 POST http://localhost:3000/api/projects
-X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
+X-User-Id: 5ae4eb99-73fc-4dc0-9e9d-f35b548ac691
 Content-Type: application/json
 
 {
-  "name": "Projeto 2",
-  "description": "Descrição 2"
+  "name": "Projeto 5",
+  "description": "Descrição 5"
 }
 
 ### getAllProjects
 GET http://localhost:3000/api/projects
-X-User-Id: 890ba404-71f3-4d43-b429-cae7d5551f98
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 
 ### getProjectById
-GET http://localhost:3000/api/projects/dbdfb55b-41a2-43a1-9544-96911df062aa
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+GET http://localhost:3000/api/projects/8c4cf56a-d20d-4017-864f-1b9220529e4c
+X-User-Id: 5ae4eb99-73fc-4dc0-9e9d-f35b548ac691
 
 ### updateProject
 PUT http://localhost:3000/api/projects/03078fc9-fbd9-4aab-857b-876034107087
@@ -94,8 +94,8 @@ X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
 ##################################################################################
 
 ### createTaskForProject
-POST http://localhost:3000/api/tasks/projects/03078fc9-fbd9-4aab-857b-876034107087
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+POST http://localhost:3000/api/tasks/projects/8c4cf56a-d20d-4017-864f-1b9220529e4c
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 Content-Type: application/json
 
 { 
@@ -106,23 +106,23 @@ Content-Type: application/json
 }
 
 ### getTasksByProject
-GET http://localhost:3000/api/tasks/projects/dbdfb55b-41a2-43a1-9544-96911df062aa
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+GET http://localhost:3000/api/tasks/projects/8c4cf56a-d20d-4017-864f-1b9220529e4c
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 
 ### getTaskById
 GET http://localhost:3000/api/tasks/36037150-5757-4464-9d07-d2a62afabf1a
 X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
 
 ### updateTask
-PUT http://localhost:3000/api/tasks/f9a9f077-1239-43c1-875f-e2ea24094929
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+PUT http://localhost:3000/api/tasks/8b768f85-0a74-4a5a-bc32-02d562652032
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 Content-Type: application/json
 
 { 
-  "title": "Tarefa 5 alterada", 
-  "description": "Alterando tarefa 5",
+  "title": "Tarefa 1 alterada", 
+  "description": "Alterando tarefa 1",
   "dueDate": "2026-10-04T10:00:00Z",
-  "status": "Concluida"
+  "status": "Pendente"
 }
 
 ### updateTaskStatus

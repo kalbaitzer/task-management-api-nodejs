@@ -1,5 +1,7 @@
-// Entry point, ponto de entrada, da aplicação (API).
-// app.js
+/**
+ * Entry point, ponto de entrada, da aplicação (API).
+ * app.js
+ */
 
 // 1. IMPORTAÇÃO DOS MÓDULOS
 const express = require('express');

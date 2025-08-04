@@ -1,5 +1,8 @@
-// Representa um Projeto, que é um contêiner para um conjunto de tarefas.
-// src/models/projectModel.js
+/**
+ * Entidade: Project
+ * Representa um Projeto, que é um contêiner para um conjunto de tarefas.
+ * src/models/projectModel.js
+ */
 
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');

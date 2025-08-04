@@ -1,5 +1,8 @@
-// Representa uma unidade de trabalho dentro de um projeto.
-// src/models/taskModel.js
+/**
+ * Entidate: Task
+ * Representa uma unidade de trabalho dentro de um projeto.
+ * src/models/taskModel.js
+ */
 
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');

@@ -27,7 +27,7 @@ exports.getAllProjects = async (userId) => {
   await utils.checkUser(userId);
 
   // Retorna todos os projetos
-  const projects = await Project.find()
+  const projects = await Project.find({ owner: userId })
     .populate('taskCount'); // "Popula" o campo virtual com a contagem
 
   // Formatação da saída com os campos: id, name e taskCount

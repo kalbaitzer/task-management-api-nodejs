@@ -88,6 +88,9 @@ exports.updateTask = async (userId, taskId, taskData) => {
 
   if (!task) return;
 
+  // Verifica se o status da tarefa é válido
+  if (!utils.checkTaskStatus(taskData.status,task.status)) return;
+
   // Regra de Negócio 3: Registrar histórico de alterações
 
   // Histórico: alteração do título da tarefa
@@ -164,15 +167,8 @@ exports.updateTaskStatus = async (userId, taskId, taskData) => {
 
   if (!task) return;
 
-  if (!taskData.status || (taskData.status != "Pendente" && taskData.status != "EmAndamento" && taskData.status != "Concluida")) {
-    // Valor do status é inválido
-    throw new Error("Status inválido.");
-  }
-
-  if (task.status == "Concluida" && taskData.status != "Concluida") {
-    // Tentativa de reabir uma tarefa concluida
-    throw new Error("Não é possível reabrir uma tarefa concluída.");
-  }
+  // Verifica se o status da tarefa é válido
+  if (!utils.checkTaskStatus(taskData.status,task.status)) return;
 
   // Regra de Negócio 3: Registrar histórico de alterações
 

@@ -1,5 +1,7 @@
-// Definição das rotas da API de Usuários
-// src/routes/userRoutes.js
+/**
+ * Definição das rotas da API de Usuários
+ * src/routes/userRoutes.js
+ */
 
 const express = require('express');
 const router = express.Router();

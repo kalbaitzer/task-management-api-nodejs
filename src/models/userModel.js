@@ -1,5 +1,8 @@
-// Representa um Usuário do sistema.
-// src/models/userModel.js
+/**
+ * Entidade: User
+ * Representa um Usuário do sistema.
+ * src/models/userModel.js
+ */
 
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid'); // Importa a função para gerar UUID v4
