@@ -99,8 +99,8 @@ X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 Content-Type: application/json
 
 { 
-  "title": "Tarefa 1", 
-  "description": "Iniciar atividade 1",
+  "title": "Tarefa 3", 
+  "description": "Iniciar atividade 3",
   "dueDate": "2025-10-15T10:00:00Z", 
   "priority": "Alta"
 }
@@ -110,46 +110,46 @@ GET http://localhost:3000/api/tasks/projects/8c4cf56a-d20d-4017-864f-1b9220529e4
 X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 
 ### getTaskById
-GET http://localhost:3000/api/tasks/36037150-5757-4464-9d07-d2a62afabf1a
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+GET http://localhost:3000/api/tasks/2bf13943-2cb8-4b38-a0e6-42dca3fdef6d
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 
 ### updateTask
-PUT http://localhost:3000/api/tasks/8b768f85-0a74-4a5a-bc32-02d562652032
+PUT http://localhost:3000/api/tasks/2bf13943-2cb8-4b38-a0e6-42dca3fdef6d
 X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 Content-Type: application/json
 
 { 
-  "title": "Tarefa 1 alterada", 
-  "description": "Alterando tarefa 1",
-  "dueDate": "2026-10-04T10:00:00Z",
-  "status": "Pendente"
+  "title": "Tarefa 2 alterada", 
+  "description": "Alterando tarefa 2",
+  "dueDate": "2030-10-04T10:00:00Z",
+  "status": "EmAndamento"
 }
 
 ### updateTaskStatus
-PATCH http://localhost:3000/api/tasks/c3e6a198-9822-40f1-a29c-eeea89da4f1d/status
-X-User-Id: b8aff0cb-e516-4b92-bfcc-2ddb9404c500
+PATCH http://localhost:3000/api/tasks/2bf13943-2cb8-4b38-a0e6-42dca3fdef6d/status
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 Content-Type: application/json
 
 { 
-  "status": "Pendente"
+  "status": "Concluida"
 }
 
 ### addComment
-POST http://localhost:3000/api/tasks/452ffc95-349a-4cce-9ae9-c2e4c7988de2/comments
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+POST http://localhost:3000/api/tasks/2bf13943-2cb8-4b38-a0e6-42dca3fdef6d/comments
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 Content-Type: application/json
 
 { 
-  "comment": "bcbbfdd"
+  "comment": "Tarefa concluída com sucesso"
 }
 
 ### getTaskHistory
-GET http://localhost:3000/api/tasks/452ffc95-349a-4cce-9ae9-c2e4c7988de2/history
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+GET http://localhost:3000/api/tasks/2bf13943-2cb8-4b38-a0e6-42dca3fdef6d/history
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 
 ### deleteTask
-DELETE http://localhost:3000/api/tasks/452ffc95-349a-4cce-9ae9-c2e4c7988de2
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+DELETE http://localhost:3000/api/tasks/3fda53f3-c9ca-4909-9365-15679df938c5
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 
 ##################################################################################
 ### Requisições para Relatórios

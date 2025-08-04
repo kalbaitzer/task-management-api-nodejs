@@ -37,7 +37,7 @@ A API implementa as seguintes regras de negócio:
 - **Conteinerização**: Docker
 - **Ambiente de Desenvolvimento**: Visual Studio Code
 - **Versionamento de Código**: Git e GitHub
-- **Teste da API**: routes.http
+- **Teste da API**: Rest Client for Visual Studio Code
 
 ---
 
@@ -62,9 +62,9 @@ package.json
 
 Após baixar o projeto no computador instale os módulos do Node.js através do comando:
 
-   ```bash
-      npm install
-   ```
+```bash
+npm install
+```
 
 ---
 
@@ -78,76 +78,76 @@ Esta é a maneira mais simples e recomendada de executar toda a aplicação.
 ### Passos
 1. **Criação do arquivo Dockerfile**: Na raiz do projeto, crie um arquivo com nome `Dockerfile` com o seguinte conteúdo:
    ```yaml
-      # ---- Estágio de Build ----
-      # Use uma imagem oficial do Node.js como base. A versão alpine é leve.
-      FROM node:18-alpine AS build
+   # ---- Estágio de Build ----
+   # Use uma imagem oficial do Node.js como base. A versão alpine é leve.
+   FROM node:18-alpine AS build
 
-      # Defina o diretório de trabalho dentro do contêiner
-      WORKDIR /usr/src/app
+   # Defina o diretório de trabalho dentro do contêiner
+   WORKDIR /usr/src/app
 
-      # Copie os arquivos de manifesto de pacotes
-      COPY package*.json ./
+   # Copie os arquivos de manifesto de pacotes
+   COPY package*.json ./
 
-      # Instale as dependências da aplicação
-      # Usamos '--only=production' para instalar apenas as dependências de produção e manter a imagem final pequena.
-      RUN npm install --only=production
+   # Instale as dependências da aplicação
+   # Usamos '--only=production' para instalar apenas as dependências de produção e manter a imagem final pequena.
+   RUN npm install --only=production
 
-      # Copie todo o código fonte da aplicação
-      COPY . .
+   # Copie todo o código fonte da aplicação
+   COPY . .
 
-      # ---- Estágio Final ----
-      # Use uma imagem menor para a execução final, para segurança e tamanho reduzido.
-      FROM node:18-alpine
+   # ---- Estágio Final ----
+   # Use uma imagem menor para a execução final, para segurança e tamanho reduzido.
+   FROM node:18-alpine
 
-      # Defina o diretório de trabalho
-      WORKDIR /usr/src/app
+   # Defina o diretório de trabalho
+   WORKDIR /usr/src/app
 
-      # Copie as dependências instaladas e o código do estágio de build
-      COPY --from=build /usr/src/app .
+   # Copie as dependências instaladas e o código do estágio de build
+   COPY --from=build /usr/src/app .
 
-      # Exponha a porta em que a aplicação vai rodar (a mesma do seu .env)
-      EXPOSE 3000
+   # Exponha a porta em que a aplicação vai rodar (a mesma do seu .env)
+   EXPOSE 3000
 
-      # Defina o comando para iniciar a aplicação quando o contêiner for executado
-      # Este comando deve corresponder ao script "start" no seu package.json
-      CMD [ "node", "app.js" ]
+   # Defina o comando para iniciar a aplicação quando o contêiner for executado
+   # Este comando deve corresponder ao script "start" no seu package.json
+   CMD [ "node", "app.js" ]
    ```
    Este arquivo está disponível na raiz do projeto.
 
 2. **Criação do arquivo docker-compose.yml**: Na raiz do projeto, crie um arquivo `docker-compose.yml` com o seguinte conteúdo:
    ```yaml
-      # Configuração do container para o ambiente (computador) de desenvolvimento
+   # Configuração do container para o ambiente (computador) de desenvolvimento
 
-      services:
-      # Serviço da API Node.js
-      app:
-         build: .  # Constrói a imagem a partir do Dockerfile no diretório atual
-         container_name: task-management-api
-         ports:
-            - "3000:3000" # Mapeia a porta 3000 do contêiner para a porta 3000 da sua máquina
-         env_file:
-            - .env.docker # Carrega as variáveis de ambiente do arquivo .env
-         depends_on:
-            - mongo       # Garante que o contêiner do MongoDB inicie antes da API
+   services:
+   # Serviço da API Node.js
+   app:
+       build: .  # Constrói a imagem a partir do Dockerfile no diretório atual
+       container_name: task-management-api
+       ports:
+       - "3000:3000" # Mapeia a porta 3000 do contêiner para a porta 3000 da sua máquina
+       env_file:
+       - .env.docker # Carrega as variáveis de ambiente do arquivo .env
+       depends_on:
+       - mongo       # Garante que o contêiner do MongoDB inicie antes da API
 
-      # Serviço do Banco de Dados MongoDB
-      mongo:
-         image: mongo:latest # Usa a imagem oficial mais recente do MongoDB
-         container_name: mongodb
-         ports:
-            - "27017:27017" # Mapeia a porta padrão do MongoDB
-         volumes:
-            - mongo-data:/data/db # Cria um volume para persistir os dados do banco
+   # Serviço do Banco de Dados MongoDB
+   mongo:
+       image: mongo:latest # Usa a imagem oficial mais recente do MongoDB
+       container_name: mongodb
+       ports:
+       - "27017:27017" # Mapeia a porta padrão do MongoDB
+       volumes:
+       - mongo-data:/data/db # Cria um volume para persistir os dados do banco
 
-      # Define o volume para persistência de dados do MongoDB
-      volumes:
-      mongo-data:
+   # Define o volume para persistência de dados do MongoDB
+   volumes:
+   mongo-data:
    ```
    Este arquivo está disponível na raiz do projeto.
 
 3. **Criação dos contêineres**: No terminal, na raiz do projeto, execute:
    ```bash
-      docker-compose up --build -d
+   docker-compose up --build -d
    ```
    Serão criados dois contêineres: um para a API e outro para o MongoDB.
    A aplicação irá iniciar, e as migrações do banco de dados serão aplicadas automaticamente na primeira inicialização, criando todas as tabelas.
@@ -157,56 +157,56 @@ Esta é a maneira mais simples e recomendada de executar toda a aplicação.
 
 5. **Publicação no Docker Hub**: Para publicar no Docker Hub é necessário apenas o contêiner da API, pois o Docker baixa automaticmente a imagem do banco de dados (`PostgreSQL`) quando for executado em outros computadores. Para a publicação é necessário a execução dos seguintes comandos através do terminal, na raiz do projeto:
    ```bash
-      docker login
-      docker-compose build
-      docker tag src-app kalbaitzer/task-management-api-nodejs:1.0
-      docker push kalbaitzer/task-management-api-nodejs:1.0
+   docker login
+   docker-compose build
+   docker tag src-app kalbaitzer/task-management-api-nodejs:1.0
+   docker push kalbaitzer/task-management-api-nodejs:1.0
    ```
 
 6. **Execução do contêiner em outros computadores**: Para executar o contêiner em outros computadores é necessário executar os seguintes passos:
    
-   1. Crie uma pasta no computador onde o contêiner será executado com o nome `task-management-api-nodejs`
+   Crie uma pasta no computador onde o contêiner será executado com o nome `task-management-api-nodejs`
    
-   2. Crie um arquivo na pasta `task-management-api-nodejs` com o nome `docker-compose.yml` com o seguinte conteúdo:
-      ```yaml
-         # Configuração do container para execução em outros computadores
+   Crie um arquivo na pasta `task-management-api-nodejs` com o nome `docker-compose.yml` com o seguinte conteúdo:
+   ```yaml
+   # Configuração do container para execução em outros computadores
 
-         # Define os serviços (contêineres) que compõem a sua aplicação.
-         services:
-         # Serviço da API Node.js, baixado do Docker Hub
-         app:
-            # O Docker irá baixar esta imagem automaticamente se ela não existir localmente.
-            image: kalbaitzer/task-management-api-nodejs:1.0
-            container_name: task-management-api-nodejs
-            ports:
-               - "3000:3000" # Mapeia a porta 3000 do contêiner para a porta 3000 da sua máquina
-            env_file:
-               - .env.docker # Carrega as variáveis de ambiente do arquivo .env
-            depends_on:
-               - mongo       # Garante que o contêiner do MongoDB inicie antes da API
+   # Define os serviços (contêineres) que compõem a sua aplicação.
+   services:
+   # Serviço da API Node.js, baixado do Docker Hub
+   app:
+   # O Docker irá baixar esta imagem automaticamente se ela não existir localmente.
+   image: kalbaitzer/task-management-api-nodejs:1.0
+   container_name: task-management-api-nodejs
+   ports:
+       - "3000:3000" # Mapeia a porta 3000 do contêiner para a porta 3000 da sua máquina
+   env_file:
+       - .env.docker # Carrega as variáveis de ambiente do arquivo .env
+   depends_on:
+       - mongo       # Garante que o contêiner do MongoDB inicie antes da API
 
-         # Serviço do Banco de Dados MongoDB
-         mongo:
-            image: mongo:latest # Usa a imagem oficial mais recente do MongoDB
-            container_name: mongodb
-            ports:
-               - "27017:27017" # Mapeia a porta padrão do MongoDB
-            volumes:
-               - mongo-data:/data/db # Cria um volume para persistir os dados do banco
+   # Serviço do Banco de Dados MongoDB
+   mongo:
+   image: mongo:latest # Usa a imagem oficial mais recente do MongoDB
+   container_name: mongodb
+   ports:
+       - "27017:27017" # Mapeia a porta padrão do MongoDB
+   volumes:
+       - mongo-data:/data/db # Cria um volume para persistir os dados do banco
 
-         # Define o volume para persistência de dados do MongoDB
-         volumes:
-         mongo-data:
-      ```
-      O conteúdo deste arquivo é diferente do usado no computador de desenvolvimento.
-      Este arquivo está disponível na raiz do projeto com o nome `docker-compose-runtime.yml`.
+   # Define o volume para persistência de dados do MongoDB
+   volumes:
+   mongo-data:
+   ```
+   O conteúdo deste arquivo é diferente do usado no computador de desenvolvimento.
+   Este arquivo está disponível na raiz do projeto com o nome `docker-compose-runtime.yml`.
 
-   3. No terminal, na pasta `task-management-api-nodejs`, execute:
-      ```bash
-         docker-compose up -d
-      ```
+   No terminal, na pasta `task-management-api-nodejs`, execute:
+   ```bash
+   docker-compose up -d
+   ```
 
-      É importante que o [Docker Desktop](https://www.docker.com/products/docker-desktop/) esteja instalado e em execução neste computador onde a imagem do contêiner será executada.
+   É importante que o [Docker Desktop](https://www.docker.com/products/docker-desktop/) esteja instalado e em execução neste computador onde a imagem do contêiner será executada.
 ---
 
 ## Documentação da API (Endpoints)
