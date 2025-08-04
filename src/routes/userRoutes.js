@@ -1,6 +1,7 @@
 /**
- * Definição das rotas da API de Usuários
- * src/routes/userRoutes.js
+ * @fileoverview Definição das rotas da API de Usuários
+ * 
+ * @module src/routes/userRoutes.js
  */
 
 const express = require('express');

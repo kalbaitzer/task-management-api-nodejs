@@ -157,4 +157,4 @@ X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
 
 ### getPerformanceReport
 GET http://localhost:3000/api/reports/performance
-X-User-Id: 890ba404-71f3-4d43-b429-cae7d5551f98
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e

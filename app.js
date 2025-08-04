@@ -1,6 +1,7 @@
 /**
- * Entry point, ponto de entrada, da aplicação (API).
- * app.js
+ * @fileoverview Entry point, ponto de entrada, da aplicação (API).
+ * 
+ * @module app.js
  */
 
 // 1. IMPORTAÇÃO DOS MÓDULOS

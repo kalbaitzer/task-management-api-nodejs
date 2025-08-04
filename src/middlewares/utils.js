@@ -1,6 +1,7 @@
 /**
- * Implementação de funções utilitárias aos Serviços.
- * src/middlewares/utils.js
+ * @fileoverview Implementação de funções utilitárias aos Serviços.
+ * 
+ * @module src/middlewares/utils.js
  */
 
 const User = require('../models/userModel');

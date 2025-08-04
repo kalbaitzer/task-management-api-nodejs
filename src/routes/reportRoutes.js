@@ -1,6 +1,7 @@
 /**
- * Definição das rotas da API de Relatórios
- * src/routes/reportRoutes.js
+ * @fileoverview Definição das rotas da API de Relatórios
+ * 
+ * @module src/routes/reportRoutes.js
  */
 
 const express = require('express');

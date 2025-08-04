@@ -1,6 +1,7 @@
 /**
- * Definição das rotas da API de Tarefas
- * src/routes/taskRoutes.js
+ * @fileoverview Definição das rotas da API de Tarefas
+ * 
+ * @modelo src/routes/taskRoutes.js
  */
 
 const express = require('express');

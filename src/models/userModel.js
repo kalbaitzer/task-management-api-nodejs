@@ -1,12 +1,13 @@
 /**
- * Entidade: User
- * Representa um Usuário do sistema.
- * src/models/userModel.js
+ * @fileoverview Representa um Usuário do sistema.
+ * 
+ * @module src/models/userModel.js
  */
 
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid'); // Importa a função para gerar UUID v4
 
+// Entidade: User
 const userSchema = new mongoose.Schema({
 
   // Identificador único do usuário.

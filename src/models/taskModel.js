@@ -1,12 +1,13 @@
 /**
- * Entidate: Task
- * Representa uma unidade de trabalho dentro de um projeto.
- * src/models/taskModel.js
+ * @fileoverview Representa uma unidade de trabalho dentro de um projeto.
+ * 
+ * @module src/models/taskModel.js
  */
 
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
+// Entidade: Task
 const taskSchema = new mongoose.Schema({
 
   // Identificador único da tarefa.

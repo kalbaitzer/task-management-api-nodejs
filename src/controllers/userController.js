@@ -1,6 +1,7 @@
 /**
- * Controller responsável por gerenciar os endpoints relacionados a Usuários.
- * src/controllers/userController.js
+ * @fileoverview Controller responsável por gerenciar os endpoints relacionados a Usuários.
+ * 
+ * @module src/controllers/userController.js
  */
 
 const userService = require('../services/userService');

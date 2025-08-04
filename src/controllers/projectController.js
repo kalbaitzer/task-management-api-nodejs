@@ -1,6 +1,7 @@
 /**
- * Controller responsável por gerenciar os endpoints relacionados a Projetos.
- * src/controllers/projectController.js
+ * @fileoverview Controller responsável por gerenciar os endpoints relacionados a Projetos.
+ * 
+ * @module src/controllers/projectController.js
  */
 
 const projectService = require('../services/projectService');

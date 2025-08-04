@@ -1,12 +1,13 @@
 /**
- * Entidade: TaskHistory
- * Registra uma alteração ou um comentário em uma tarefa, servindo como log de auditoria.
- * src/models/taskHistoryModel.js
+ * @fileoverview Registra uma alteração ou um comentário em uma tarefa, servindo como log de auditoria.
+ * 
+ * @module src/models/taskHistoryModel.js
  */
 
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
+// Entidade: TaskHistory
 const taskHistorySchema = new mongoose.Schema({
 
   // Identificador único do registro de histórico.

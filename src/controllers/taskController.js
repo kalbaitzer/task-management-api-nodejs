@@ -1,6 +1,7 @@
 /**
- * Controller responsável por gerenciar os endpoints relacionados a Tarefas.
- * src/controllers/taskController.js
+ * @fileoverview Controller responsável por gerenciar os endpoints relacionados a Tarefas.
+ * 
+ * @module src/controllers/taskController.js
  */
 
 const taskService = require('../services/taskService');

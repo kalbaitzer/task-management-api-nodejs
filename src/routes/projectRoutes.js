@@ -1,6 +1,7 @@
 /**
- * Definição das rotas da API de Projetos
- * src/routes/protectRoutes.js
+ * @fileoverview Definição das rotas da API de Projetos
+ * 
+ * @module src/routes/protectRoutes.js
  */
 
 const express = require('express');

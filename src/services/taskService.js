@@ -1,11 +1,29 @@
-// Implementação do Serviço de Tarefas.
-// src/services/taskService.js
+/**
+ * @fileoverview Implementação do Serviço de Tarefas.
+ * 
+ * @module src/services/taskService.js
+ */
 
 const utils = require('../middlewares/utils');
 const Task = require('../models/taskModel');
 const TaskHistory = require('../models/taskHistoryModel');
 
-// Cria uma nova tarefa.
+/**
+ * Cria uma nova tarefa para um projeto, garantindo que o limite de tarefas não seja excedido.
+ * Cria também o registro de histórico inicial. A operação é atômica (usa transação).
+ *
+ * @async
+ * @param {string} userId - O ID do usuário que está criando a tarefa (para autoria e permissão).
+ * @param {string} projectId - O ID do projeto ao qual a tarefa pertence.
+ * @param {object} taskData - O objeto com os dados da nova tarefa: { title, description, dueTo,
+ * priority }.
+ * 
+ * @returns {Promise<Object>} Uma promessa que resolve para o documento da tarefa recém-criada.
+ * 
+ * @throws {Error} Se o usuário (`userId`) não for encontrado.
+ * @throws {Error} Se o projeto (`projectId`) não for encontrado.
+ * @throws {Error} Se o projeto já atingiu o limite de 20 tarefas.
+ */
 exports.createTaskForProject = async (userId, projectId, taskData) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);
@@ -18,18 +36,22 @@ exports.createTaskForProject = async (userId, projectId, taskData) => {
     
     await project.populate('taskCount'); // "Popula" o campo virtual com a contagem
     
+    // Verifica se o total de tarefas é maior ou igual a 20
     if (project.taskCount >= 20) {
       // Lança uma exceção de regra de negócio
       throw new Error("Limite de 20 tarefas por projeto foi atingido.");
     }
   }
 
+  // Cria um objeto Task a partir dos dados contidos em taksData
   const task = new Task({
     ...taskData,
   });
 
+  // Associa a tarefa ao projeto (projectId)
   task.projectId = projectId;
 
+  // Grava no banco de dados
   await task.save();
 
   // Criação do histórico da tarefa
@@ -40,12 +62,27 @@ exports.createTaskForProject = async (userId, projectId, taskData) => {
     newValue: "Tarefa '" + task.title + "' foi criada."
   });
 
+  // Grava no banco de dados
   await history.save();
 
+  // Retorn a tarefa criada
   return task;
 };
 
-// Lista todas as tarefas de um projeto específico.
+/**
+ * Lista todas as tarefas de um projeto específico.
+ *
+ * @async
+ * @param {string} userId - O ID do usuário para verificação de permissão.
+ * @param {string} projectId - O ID do projeto cujas tarefas serão listadas.
+ * 
+ * @returns {Promise<Array<Object>>} Um array de objetos de tarefa. Cada objeto 
+ * no array representa uma tarefa e contém campos como: { id, title, description, 
+ * status, priority, dueDate, etc. }.
+ * 
+ * @throws {Error} Se o usuário (`userId`) não for encontrado.
+ * @throws {Error} Se o projeto (`projectId`) não for encontrado.
+ */
 exports.getTasksByProject = async (userId, projectId) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);
@@ -70,15 +107,42 @@ exports.getTasksByProject = async (userId, projectId) => {
   }));
 };
 
-// Busca uma tarefa específica pelo seu ID.
+/**
+ * Busca uma tarefa específica pelo seu ID.
+ *
+ * @async
+ * @param {string} userId - O ID do usuário para verificação de permissão.
+ * @param {string} taskId - O ID da tarefa a ser buscada.
+ * 
+ * @returns {Promise<Object|null>} O objeto da tarefa ou `null` se não for encontrado. 
+ * O objeto da tarefa contém os seguintes campos: { id, title, description, dueDate, 
+ * status, priority, projectId, createdAt, updatedAt }.
+ * 
+ * @throws {Error} Se o usuário (`userId`) não for encontrado.
+ */
 exports.getTaksById = async (userId, taskId) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);
 
+  // Retorna a tarefa identificada pelo seu ID.
   return await Task.findById(taskId);
 };
 
-// Atualiza uma tarefa específica pelo seu ID.
+/**
+ * Atualiza uma tarefa específica pelo seu ID, criando registros de histórico para cada 
+ * campo alterado.
+ *
+ * @async
+ * @param {string} userId - O ID do usuário para verificação de permissão.
+ * @param {string} taskId - O ID da tarefa a ser atualizada.
+ * @param {object} taskData - Objeto com os campos a serem atualizados: { title, description,
+ * dueDate, status, updatedAt }
+ * 
+ * @returns {Promise<Object>} O documento da tarefa atualizada.
+ * 
+ * @throws {Error} Se o usuário (`userId`) não for encontrado.
+ * @throws {Error} Se a tarefa (`taskId`) não for encontrada.
+ */
 exports.updateTask = async (userId, taskId, taskData) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);
@@ -97,12 +161,12 @@ exports.updateTask = async (userId, taskId, taskData) => {
   if (taskData.title && task.title != taskData.title) {
 
     const history = new TaskHistory({
-    taskId: taskId,
-    userId: userId,
-    changeType: "Update",
-    fieldName: "Title",
-    oldValue: task.title,
-    newValue: taskData.title
+      taskId: taskId,
+      userId: userId,
+      changeType: "Update",
+      fieldName: "Title",
+      oldValue: task.title,
+      newValue: taskData.title
     });
 
     await history.save();
@@ -112,12 +176,12 @@ exports.updateTask = async (userId, taskId, taskData) => {
   if (taskData.description && task.description != taskData.description) {
 
     const history = new TaskHistory({
-    taskId: taskId,
-    userId: userId,
-    changeType: "Update",
-    fieldName: "Description",
-    oldValue: task.description,
-    newValue: taskData.description
+      taskId: taskId,
+      userId: userId,
+      changeType: "Update",
+      fieldName: "Description",
+      oldValue: task.description,
+      newValue: taskData.description
     });
 
     await history.save();
@@ -127,12 +191,12 @@ exports.updateTask = async (userId, taskId, taskData) => {
   if (taskData.dueDate && task.dueDate != taskData.dueDate) {
 
     const history = new TaskHistory({
-    taskId: taskId,
-    userId: userId,
-    changeType: "Update",
-    fieldName: "DueTo",
-    oldValue: task.dueDate,
-    newValue: taskData.dueDate
+      taskId: taskId,
+      userId: userId,
+      changeType: "Update",
+      fieldName: "DueTo",
+      oldValue: task.dueDate,
+      newValue: taskData.dueDate
     });
 
     await history.save();
@@ -142,22 +206,39 @@ exports.updateTask = async (userId, taskId, taskData) => {
   if (taskData.status && task.status != taskData.status) {
 
     const history = new TaskHistory({
-    taskId: taskId,
-    userId: userId,
-    changeType: "Update",
-    fieldName: "Status",
-    oldValue: task.status,
-    newValue: taskData.status
+      taskId: taskId,
+      userId: userId,
+      changeType: "Update",
+      fieldName: "Status",
+      oldValue: task.status,
+      newValue: taskData.status
     });
 
     await history.save();
   }
 
+  // Retorna a tarefa atualidada. A opção { new: true } garante que o documento retornado 
+  // seja a versão atualizada
   return await Task.findByIdAndUpdate(taskId, taskData, { new: true });
-  // { new: true } garante que o documento retornado seja a versão atualizada
 };
 
 // Atualiza o status de uma tarefa.
+/**
+ * Atualiza especificamente o status de uma tarefa e registrando a alteração no histórico.
+ *
+ * @async
+ *
+ * @param {string} userId - O ID do usuário para verificação de permissão.
+ * @param {string} taskId - O ID da tarefa cujo status será atualizado.
+ * @param {object} taskData - O objeto contendo o novo status. Ex: `{ status: 'Concluida' }`.
+ *
+ * @returns {Promise<Object>} Uma promessa que resolve para o documento da tarefa com o status 
+ * atualizado.
+ *
+ * @throws {Error} Se o usuário (`userId`) não for encontrado.
+ * @throws {Error} Se a tarefa (`taskId`) não for encontrada.
+ * @throws {Error} Lança um erro se a transição de status for inválida (lançado por `checkTaskStatus`).
+ */
 exports.updateTaskStatus = async (userId, taskId, taskData) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);
@@ -176,22 +257,36 @@ exports.updateTaskStatus = async (userId, taskId, taskData) => {
   if (task.status != taskData.status) {
 
     const history = new TaskHistory({
-    taskId: taskId,
-    userId: userId,
-    changeType: "Update",
-    fieldName: "Status",
-    oldValue: task.status,
-    newValue: taskData.status
+      taskId: taskId,
+      userId: userId,
+      changeType: "Update",
+      fieldName: "Status",
+      oldValue: task.status,
+      newValue: taskData.status
     });
 
     await history.save();
   }
 
+  // Retorna a tarefa atualidada. A opção { new: true } garante que o documento retornado 
+  // seja a versão atualizada
   return await Task.findByIdAndUpdate(taskId, { status: taskData.status }, { new: true });
-  // { new: true } garante que o documento retornado seja a versão atualizada
 };
 
-// Atualiza o status de uma tarefa.
+/**
+ * Adiciona um comentário a uma tarefa, registrando o evento no histórico.
+ *
+ * @async
+ * @param {string} userId - O ID do usuário para verificação de permissão.
+ * @param {string} taskId - O ID da tarefa a ser comentada.
+ * 
+ * @param {object} taskData - Objeto com o comentário. Ex: { comment: "texto" }.
+ * 
+ * @returns {Promise<Object>} O documento da tarefa atualizada.
+ * 
+ * @throws {Error} Se o usuário (`userId`) não for encontrado.
+ * @throws {Error} Se a tarefa (`taskId`) não for encontrada.
+ */
 exports.addComment = async (userId, taskId, taskData) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);
@@ -211,11 +306,23 @@ exports.addComment = async (userId, taskId, taskData) => {
 
   await history.save();
 
+  // Retorna a tarefa atualidada. A opção { new: true } garante que o documento retornado 
+  // seja a versão atualizada
   return await Task.findByIdAndUpdate(taskId, { }, { new: true });
-  // { new: true } garante que o documento retornado seja a versão atualizada
 };
 
-// Remove uma tarefa específica pelo seu ID.
+/**
+ * Remove uma tarefa identificada pelo seu ID e todo o seu histórico.
+ *
+ * @async
+ * @param {string} userId - O ID do usuário para verificação de permissão.
+ * @param {string} taskId - O ID da tarefa a ser removida.
+ * 
+ * @returns {Promise<Object>} O documento da tarefa que foi removida.
+ * 
+ * @throws {Error} Se o usuário (`userId`) não for encontrado.
+ * @throws {Error} Se a tarefa (`taskId`) não for encontrada.
+ */
 exports.deleteTask = async (userId, taskId) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);
@@ -227,7 +334,21 @@ exports.deleteTask = async (userId, taskId) => {
   return await Task.findByIdAndDelete(taskId);
 };
 
-// Busca o histórico completo de uma tarefa.
+/**
+ * Busca o histórico completo de uma tarefa.
+ *
+ * @async
+ * @param {string} userId - O ID do usuário para verificação de permissão.
+ * @param {string} taskId - O ID da tarefa cujo histórico é desejado.
+ * 
+ * @returns {Promise<Array<Object>>} Um array de objetos de histórico. Se a tarefa não 
+ * tiver histórico, retorna um array vazio []. Cada objeto no array tem a seguinte 
+ * estrutura: { id, userId, taskId, changeDate, changeType, fieldName?, oldValue?,
+ * newValue?, comment? }.
+ * 
+ * @throws {Error} Se o usuário (`userId`) não for encontrado.
+ * @throws {Error} Se a tarefa (`taskId`) não for encontrada.
+ */
 exports.getTaskHistory = async (userId, taskId) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);

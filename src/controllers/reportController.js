@@ -1,6 +1,7 @@
 /**
- * Controller responsável por gerenciar os endpoints relacionados a Relatórios.
- * src/controllers/reportController.js
+ * @fileoverviewController responsável por gerenciar os endpoints relacionados a Relatórios.
+ 
+ * @module src/controllers/reportController.js
  */
 
 const reportService = require('../services/reportService');
