@@ -159,7 +159,7 @@ Esta é a maneira mais simples e recomendada de executar toda a aplicação.
    ```bash
    docker login
    docker-compose build
-   docker tag src-app kalbaitzer/task-management-api-nodejs:1.0
+   docker tag taskmanagementapi-nodejs-app kalbaitzer/task-management-api-nodejs:1.0
    docker push kalbaitzer/task-management-api-nodejs:1.0
    ```
 
