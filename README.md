@@ -89,7 +89,7 @@ Esta é a maneira mais simples e recomendada de executar toda a aplicação.
    COPY package*.json ./
 
    # Instale as dependências da aplicação
-   # A opção '--only=production' instala apenas as dependências de produção, mantendo a imagem pequena.
+   # A opção '--only=production' instala apenas as dependências de produção (imagem pequena).
    RUN npm install --only=production
 
    # Copie todo o código fonte da aplicação
