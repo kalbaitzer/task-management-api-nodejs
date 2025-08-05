@@ -1,27 +1,27 @@
 /**
  * @fileoverview Testes unitários para o Serviço de Tarefas.
  * 
- * @module test/services/taskService.test.js
+ * @module test/taskService.test.js
  */
 
 // Importações dos Mocks e do Serviço
-const User = require('../../src/models/userModel'); 
-const Task = require('../../src/models/taskModel');
-const Project = require('../../src/models/projectModel');
-const TaskHistory = require('../../src/models/taskHistoryModel');
+const User = require('../src/models/userModel'); 
+const Task = require('../src/models/taskModel');
+const Project = require('../src/models/projectModel');
+const TaskHistory = require('../src/models/taskHistoryModel');
 
 // Importa o serviço que queremos testar
-const taskService = require('../../src/services/taskService');
+const taskService = require('../src/services/taskService');
 
 // Mocka (simula) os models para isolar o serviço do banco de dados
-jest.mock('../../src/models/projectModel', () => ({
+jest.mock('../src/models/projectModel', () => ({
   find: jest.fn(),
   findOne: jest.fn(),
   findById: jest.fn(),
   findByIdAndDelete: jest.fn(),
 }));
 
-jest.mock('../../src/models/taskModel', () => ({
+jest.mock('../src/models/taskModel', () => ({
   find: jest.fn(),
   save: jest.fn(),
   exists: jest.fn(),
@@ -30,7 +30,7 @@ jest.mock('../../src/models/taskModel', () => ({
   findByIdAndUpdate: jest.fn(),
 }));
 
-jest.mock('../../src/models/taskHistoryModel', () => {
+jest.mock('../src/models/taskHistoryModel', () => {
   // Criamos uma função de mock para o método .save() da instância
   const mockSave = jest.fn().mockResolvedValue(true);
 
@@ -50,7 +50,7 @@ jest.mock('../../src/models/taskHistoryModel', () => {
   return mockConstructor;
 });
 
-jest.mock('../../src/models/userModel', () => ({
+jest.mock('../src/models/userModel', () => ({
   findById: jest.fn(),
 }));
 

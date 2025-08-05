@@ -1,32 +1,32 @@
 /**
  * @fileoverview Testes unitários para o Serviço de Projetos.
  * 
- * @module test/services/projectService.test.js
+ * @module test/projectService.test.js
  */
  
 // Importa os models para que possamos mocká-los
-const User = require('../../src/models/userModel'); 
-const Task = require('../../src/models/taskModel');
-const Project = require('../../src/models/projectModel');
+const User = require('../src/models/userModel'); 
+const Task = require('../src/models/taskModel');
+const Project = require('../src/models/projectModel');
 
 // Importa o serviço que queremos testar
-const projectService = require('../../src/services/projectService');
+const projectService = require('../src/services/projectService');
 
 // Mocka (simula) os models para isolar o serviço do banco de dados
-jest.mock('../../src/models/projectModel', () => ({
+jest.mock('../src/models/projectModel', () => ({
   find: jest.fn(),
   findOne: jest.fn(),
   findById: jest.fn(),
   findByIdAndDelete: jest.fn(),
 }));
 
-jest.mock('../../src/models/taskModel', () => ({
+jest.mock('../src/models/taskModel', () => ({
   find: jest.fn(),
   exists: jest.fn(),
   deleteMany: jest.fn(),
 }));
 
-jest.mock('../../src/models/userModel', () => ({
+jest.mock('../src/models/userModel', () => ({
   findById: jest.fn(),
 }));
 

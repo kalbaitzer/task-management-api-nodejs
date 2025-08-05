@@ -1,20 +1,20 @@
 /**
  * @fileoverview Testes unitários para o Serviço de Relatórios.
  * 
- * @module test/services/reportService.test.js
+ * @module test/reportService.test.js
  */
 
-const User = require('../../src/models/userModel'); 
-const TaskHistory = require('../../src/models/taskHistoryModel');
+const User = require('../src/models/userModel'); 
+const TaskHistory = require('../src/models/taskHistoryModel');
 
-const reportService = require('../../src/services/reportService'); // Supondo que o método está em reportService.js
+const reportService = require('../src/services/reportService'); // Supondo que o método está em reportService.js
 
 // Mockamos as dependências externas
-jest.mock('../../src/models/taskHistoryModel', () => ({
+jest.mock('../src/models/taskHistoryModel', () => ({
   find: jest.fn(),
 }));
 
-jest.mock('../../src/models/userModel', () => ({
+jest.mock('../src/models/userModel', () => ({
   findById: jest.fn(),
 }));
 
