@@ -34,7 +34,9 @@ exports.createTaskForProject = async (userId, projectId, taskData) => {
   // Regra de Negócio 4: Limite de tarefas por projeto
   if (project != null) {
     
-    await project.populate('taskCount'); // "Popula" o campo virtual com a contagem
+    if (!project.taskCount) {
+      await project.populate('taskCount'); // "Popula" o campo virtual com a contagem
+    }
     
     // Verifica se o total de tarefas é maior ou igual a 20
     if (project.taskCount >= 20) {
@@ -120,7 +122,7 @@ exports.getTasksByProject = async (userId, projectId) => {
  * 
  * @throws {Error} Se o usuário (`userId`) não for encontrado.
  */
-exports.getTaksById = async (userId, taskId) => {
+exports.getTaskById = async (userId, taskId) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);
 
@@ -154,6 +156,9 @@ exports.updateTask = async (userId, taskId, taskData) => {
 
   // Verifica se o status da tarefa é válido
   if (!utils.checkTaskStatus(taskData.status,task.status)) return;
+
+  // Remove o campo 'priority' de taskData
+  if (taskData.priority) delete taskData.priority;
 
   // Regra de Negócio 3: Registrar histórico de alterações
 

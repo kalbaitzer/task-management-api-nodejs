@@ -68,7 +68,7 @@ Content-Type: application/json
 
 ### getAllProjects
 GET http://localhost:3000/api/projects
-X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
+X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
 
 ### getProjectById
 GET http://localhost:3000/api/projects/8c4cf56a-d20d-4017-864f-1b9220529e4c
@@ -94,24 +94,24 @@ X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
 ##################################################################################
 
 ### createTaskForProject
-POST http://localhost:3000/api/tasks/projects/8c4cf56a-d20d-4017-864f-1b9220529e4c
-X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
+POST http://localhost:3000/api/tasks/projects/9f08e2ec-7ed5-4b6c-938d-989f1d9efec6
+X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
 Content-Type: application/json
 
 { 
-  "title": "Tarefa 3", 
-  "description": "Iniciar atividade 3",
+  "title": "Tarefa 1", 
+  "description": "Iniciar atividade 1",
   "dueDate": "2025-10-15T10:00:00Z", 
   "priority": "Alta"
 }
 
 ### getTasksByProject
-GET http://localhost:3000/api/tasks/projects/8c4cf56a-d20d-4017-864f-1b9220529e4c
-X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
+GET http://localhost:3000/api/tasks/projects/9f08e2ec-7ed5-4b6c-938d-989f1d9efec6
+X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
 
 ### getTaskById
-GET http://localhost:3000/api/tasks/2bf13943-2cb8-4b38-a0e6-42dca3fdef6d
-X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
+GET http://localhost:3000/api/tasks/431985f3-2a3b-42d4-9ca2-49c8811568e1
+X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
 
 ### updateTask
 PUT http://localhost:3000/api/tasks/2bf13943-2cb8-4b38-a0e6-42dca3fdef6d
