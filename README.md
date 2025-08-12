@@ -36,7 +36,7 @@ A API implementa as seguintes regras de negócio:
 - **Backend**: Node.js 22 e Express.js 5
 - **Persistência de Dados**: Mongoose (ODM - Object Document Mapper)
 - **Banco de Dados**: MongoDB 8 (Não-Relacional, Orientado a Documentos)
-- **Cache**: Redis 5
+- **Cache em memória**: Redis 5
 - **Arquitetura**: Clean Architecture
 - **Conteinerização**: Docker
 - **Ambiente de Desenvolvimento**: Visual Studio Code
