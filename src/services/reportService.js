@@ -32,6 +32,9 @@ const TaskHistory = require('../models/taskHistoryModel');
  * @throws {Error} Lança um erro se o usuário não tiver o perfil 'Manager'.
  */
 exports.getPerformanceReport = async (userId) => {
+  // Define uma chave única para este recurso no cache
+  const cacheKey = `report:performance`;
+
   // Verifica se o usuário existe
   const user = await utils.checkUser(userId);
 
@@ -40,6 +43,11 @@ exports.getPerformanceReport = async (userId) => {
 	// Lança uma exceção de regra de negócio
 	throw new Error("Você não tem permissão para acessar este relatório.");
   }
+
+  // Tenta buscar do cache primeiro
+  const cachedReport = await utils.getCache(cacheKey);
+  
+  if (cachedReport) return cachedReport;
 
   // Query para consulta de tarefas concluídas nos últimos 30 dias no histórico
   const query = {
@@ -55,28 +63,37 @@ exports.getPerformanceReport = async (userId) => {
   // Obtém o total de tarefas concluídas
   const totalTasksCompleted = completedTasks.length;
 
+  var report;
+
   // Se nenhum tarefa foi concluída retorna um relatório zerado
   if (totalTasksCompleted == 0) {
 
-    return {
+    report = {
       generatedAt: new Date(),
       totalTasksCompleted: 0,
       distinctUsersWhoCompletedTasks: 0,
       averageTasksCompletedPerUser: 0
     };    
   }
+  else {
 
-  // Obtém o total de usuários (distintos) que concluiram as tarefas
-  const distinctUsersWhoCompletedTasks = new Set(completedTasks.map(h => h.userId)).size;
+    // Obtém o total de usuários (distintos) que concluiram as tarefas
+    const distinctUsersWhoCompletedTasks = new Set(completedTasks.map(h => h.userId)).size;
    
-  // Calcular a média
-  const averageTasks = totalTasksCompleted / distinctUsersWhoCompletedTasks;
+    // Calcular a média
+    const averageTasks = totalTasksCompleted / distinctUsersWhoCompletedTasks;
 
-  // Retorna o relatório
-  return {
-    generatedAt: new Date(),
-    totalTasksCompleted: totalTasksCompleted,
-    distinctUsersWhoCompletedTasks: distinctUsersWhoCompletedTasks,
-    averageTasksCompletedPerUser: Math.round(averageTasks * 100) / 100 // Arredonda para 2 casas
-  };
+    // Retorna o relatório
+    report = {
+      generatedAt: new Date(),
+      totalTasksCompleted: totalTasksCompleted,
+      distinctUsersWhoCompletedTasks: distinctUsersWhoCompletedTasks,
+      averageTasksCompletedPerUser: Math.round(averageTasks * 100) / 100 // Arredonda para 2 casas
+    };
+  }
+
+  // Salva o resultado no cache
+  await utils.setCache(cacheKey, report);
+
+  return report;
 };

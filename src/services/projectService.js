@@ -25,7 +25,7 @@ const TaskHistory = require('../models/taskHistoryModel');
 exports.createProject = async (userId, projectData) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);
-
+  
   // Cria um objeto Project a partir dos dados contidos em projectData
   const project = new Project({
     ...projectData,
@@ -36,7 +36,10 @@ exports.createProject = async (userId, projectData) => {
 
   // Grava no banco de dados
   await project.save();
-  
+
+  // Invalida o cache no Redis
+  utils.invalidateCache('project', 'all');
+
   // Retorn o projeto criado
   return project;
 };
@@ -53,19 +56,32 @@ exports.createProject = async (userId, projectData) => {
  * @throws {Error} Se o usuário (`userId`) não for encontrado.
  */
 exports.getAllProjects = async (userId) => {
+  // Define uma chave única para este recurso no cache
+  const cacheKey = `project:all`;
+
   // Verifica se o usuário existe
   await utils.checkUser(userId);
+
+  // Tenta buscar do cache primeiro
+  const cachedProjects = await utils.getCache(cacheKey);
+  
+  if (cachedProjects) return cachedProjects;
 
   // Retorna todos os projetos
   const projects = await Project.find({ owner: userId })
     .populate('taskCount'); // "Popula" o campo virtual com a contagem
 
-  // Formatação da saída com os campos: id, name e taskCount
-  return projects.map(p => ({
+  // Formatação da saída com os campos: id, name e taskCount    
+  const projectsMap = projects.map(p => ({
     id: p._id,
     name: p.name,
     taskCount: p.taskCount
   }));
+ 
+  // Salva o resultado no cache
+  await utils.setCache(cacheKey, projectsMap);
+
+  return projectsMap;
 };
 
 /**
@@ -81,11 +97,24 @@ exports.getAllProjects = async (userId) => {
  * @throws {Error} Se o usuário (`userId`) não for encontrado.
  */
 exports.getProjectById = async (userId, projectId) => {
+  // Define uma chave única para este recurso no cache
+  const cacheKey = `project:${projectId}`;
+  
   // Verifica se o usuário existe
   await utils.checkUser(userId);
 
+  // Tenta buscar do cache primeiro
+  const cachedProject = await utils.getCache(cacheKey);
+  
+  if (cachedProject) return cachedProject;
+  
   // Retorna o projeto identificado pelo seu ID, com as tarefas populadas.
-  return await Project.findById(projectId).populate('tasks');
+  const project = await Project.findById(projectId).populate('tasks');
+
+  // Salva o resultado no cache
+  await utils.setCache(cacheKey, project);
+
+  return project;
 };
 
 /**
@@ -107,7 +136,15 @@ exports.updateProject = async (userId, projectId, projectData) => {
 
   // Retorna o projeto atualidado. A opção { new: true } garante que o documento retornado 
   // seja a versão atualizada
-  return await Project.findByIdAndUpdate(projectId, projectData, { new: true });
+  const result = await Project.findByIdAndUpdate(projectId, projectData, { new: true });
+
+  // Invalida o cache no Redis
+  if (result) {
+    utils.invalidateCache('project', 'all');
+    utils.invalidateCache('project', projectId);
+  }
+
+  return result;
 };
 
 // Remove um projeto específico pelo seu ID.
@@ -159,5 +196,13 @@ exports.deleteProject = async (userId, projectId) => {
   await Task.deleteMany({ projectId: projectId });
 
   // Remover o projeto.
-  return await Project.findByIdAndDelete(projectId);
+  const result = await Project.findByIdAndDelete(projectId);
+
+  // Invalida o cache no Redis
+  if (result) {
+    utils.invalidateCache('project', 'all');
+    utils.invalidateCache('project', projectId);
+  }
+
+  return result;
 };

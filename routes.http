@@ -26,10 +26,10 @@ Content-Type: application/json
 GET http://localhost:3000/api/users
 
 ### getUserById
-GET http://localhost:3000/api/users/e888710c-5e56-457b-8703-3ca975a9c3b3
+GET http://localhost:3000/api/users/c437b4db-7473-49be-a674-13474a1f1b31
 
 ### updateUser
-PUT http://localhost:3000/api/users/9a61522c-e5a4-47a7-b52c-9507aa72e4f2
+PUT http://localhost:3000/api/users/f3f92bfe-1a08-44d8-a222-43ff72a8ae4b
 Content-Type: application/json
 
 {
@@ -39,7 +39,7 @@ Content-Type: application/json
 }
 
 ### deleteUser
-DELETE http://localhost:3000/api/users/b03f0f94-468d-475d-a08f-98b2bcd859fb
+DELETE http://localhost:3000/api/users/dc2bf03d-68d7-49b3-b8d1-f34e95dbd100
 
 
 ##################################################################################
@@ -48,7 +48,7 @@ DELETE http://localhost:3000/api/users/b03f0f94-468d-475d-a08f-98b2bcd859fb
 
 ### createProject
 POST http://localhost:3000/api/projects
-X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
+X-User-Id: c437b4db-7473-49be-a674-13474a1f1b31
 Content-Type: application/json
 
 {
@@ -58,21 +58,21 @@ Content-Type: application/json
 
 ### createProject
 POST http://localhost:3000/api/projects
-X-User-Id: 5ae4eb99-73fc-4dc0-9e9d-f35b548ac691
+X-User-Id: c437b4db-7473-49be-a674-13474a1f1b31
 Content-Type: application/json
 
 {
-  "name": "Projeto 5",
-  "description": "Descrição 5"
+  "name": "Projeto 1",
+  "description": "Descrição 1"
 }
 
 ### getAllProjects
 GET http://localhost:3000/api/projects
-X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
+X-User-Id: c437b4db-7473-49be-a674-13474a1f1b31
 
 ### getProjectById
-GET http://localhost:3000/api/projects/8c4cf56a-d20d-4017-864f-1b9220529e4c
-X-User-Id: 5ae4eb99-73fc-4dc0-9e9d-f35b548ac691
+GET http://localhost:3000/api/projects/fc123d64-bdd0-4aa4-afa7-a8e9d7e59357
+X-User-Id: c437b4db-7473-49be-a674-13474a1f1b31
 
 ### updateProject
 PUT http://localhost:3000/api/projects/03078fc9-fbd9-4aab-857b-876034107087
@@ -85,8 +85,8 @@ Content-Type: application/json
 }
 
 ### deletProject
-DELETE http://localhost:3000/api/projects/03078fc9-fbd9-4aab-857b-876034107087
-X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
+DELETE http://localhost:3000/api/projects/be1955f1-ef1d-45e5-8ed4-33290ad7ff5b
+X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 
 
 ##################################################################################
@@ -94,8 +94,8 @@ X-User-Id: d5a1a361-40f7-48ec-8b31-81ce17a990f4
 ##################################################################################
 
 ### createTaskForProject
-POST http://localhost:3000/api/tasks/projects/9f08e2ec-7ed5-4b6c-938d-989f1d9efec6
-X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
+POST http://localhost:3000/api/tasks/projects/fc123d64-bdd0-4aa4-afa7-a8e9d7e59357
+X-User-Id: c437b4db-7473-49be-a674-13474a1f1b31
 Content-Type: application/json
 
 { 
@@ -106,28 +106,28 @@ Content-Type: application/json
 }
 
 ### getTasksByProject
-GET http://localhost:3000/api/tasks/projects/9f08e2ec-7ed5-4b6c-938d-989f1d9efec6
-X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
+GET http://localhost:3000/api/tasks/projects/fc123d64-bdd0-4aa4-afa7-a8e9d7e59357
+X-User-Id: c437b4db-7473-49be-a674-13474a1f1b31
 
 ### getTaskById
-GET http://localhost:3000/api/tasks/431985f3-2a3b-42d4-9ca2-49c8811568e1
-X-User-Id: aa2754ed-22b0-43cc-b9ff-8093a11058a6
+GET http://localhost:3000/api/tasks/bc916e4d-e6c4-41a2-a80a-1c75a7cdf05e
+X-User-Id: c437b4db-7473-49be-a674-13474a1f1b31
 
 ### updateTask
-PUT http://localhost:3000/api/tasks/2bf13943-2cb8-4b38-a0e6-42dca3fdef6d
-X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
+PUT http://localhost:3000/api/tasks/bc916e4d-e6c4-41a2-a80a-1c75a7cdf05e
+X-User-Id: c437b4db-7473-49be-a674-13474a1f1b31
 Content-Type: application/json
 
 { 
   "title": "Tarefa 2 alterada", 
-  "description": "Alterando tarefa 2",
+  "description": "Alterando tarefa 2 novamente",
   "dueDate": "2030-10-04T10:00:00Z",
-  "status": "EmAndamento"
+  "status": "Concluida"
 }
 
 ### updateTaskStatus
-PATCH http://localhost:3000/api/tasks/2bf13943-2cb8-4b38-a0e6-42dca3fdef6d/status
-X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
+PATCH http://localhost:3000/api/tasks/e9e60b39-be39-4367-84da-52d57ccf29d7/status
+X-User-Id: dc2bf03d-68d7-49b3-b8d1-f34e95dbd100
 Content-Type: application/json
 
 { 
@@ -157,4 +157,4 @@ X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
 
 ### getPerformanceReport
 GET http://localhost:3000/api/reports/performance
-X-User-Id: e9d5d6fd-8d2c-4c3e-8d44-dfc246343d9e
+X-User-Id: c437b4db-7473-49be-a674-13474a1f1b31

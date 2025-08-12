@@ -5,9 +5,9 @@
  */
 
 const User = require('../src/models/userModel'); 
+const utils = require('../src/middlewares/utils');
 const TaskHistory = require('../src/models/taskHistoryModel');
-
-const reportService = require('../src/services/reportService'); // Supondo que o método está em reportService.js
+const reportService = require('../src/services/reportService');
 
 // Mockamos as dependências externas
 jest.mock('../src/models/taskHistoryModel', () => ({
@@ -25,6 +25,7 @@ describe('Report Service', () => {
   
   beforeEach(() => {
     jest.clearAllMocks();
+    utils.invalidateCache('report', 'performance');
   });
 
   describe('getPerformanceReport', () => {

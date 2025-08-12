@@ -4,9 +4,9 @@
  * @module src/services/taskService.js
  */
 
-const utils = require('../middlewares/utils');
 const Task = require('../models/taskModel');
 const TaskHistory = require('../models/taskHistoryModel');
+const utils = require('../middlewares/utils');
 
 /**
  * Cria uma nova tarefa para um projeto, garantindo que o limite de tarefas não seja excedido.
@@ -67,6 +67,11 @@ exports.createTaskForProject = async (userId, projectId, taskData) => {
   // Grava no banco de dados
   await history.save();
 
+  // Invalida o cache no Redis
+  utils.invalidateCache('tasks', projectId);
+  utils.invalidateCache('project', 'all');
+  utils.invalidateCache('project', projectId);
+
   // Retorn a tarefa criada
   return task;
 };
@@ -86,17 +91,25 @@ exports.createTaskForProject = async (userId, projectId, taskData) => {
  * @throws {Error} Se o projeto (`projectId`) não for encontrado.
  */
 exports.getTasksByProject = async (userId, projectId) => {
+  // Define uma chave única para este recurso no cache
+  const cacheKey = `tasks:${projectId}`;
+
   // Verifica se o usuário existe
   await utils.checkUser(userId);
 
   // Verfica se o projeto existe
   await utils.checkProject(projectId);
   
+  // Tenta buscar do cache primeiro
+  const cachedTasks = await utils.getCache(cacheKey);
+  
+  if (cachedTasks) return cachedTasks;
+
   // Obtém a lista de tarefas do projeto
-  var tasks = await Task.find({ projectId: projectId });
+  const tasks = await Task.find({ projectId: projectId });
 
   // Formatação da saída com dos campos
-  return tasks.map(t => ({
+  const tasksMap = tasks.map(t => ({
     id: t._id,
     title: t.title,
     description: t.description,
@@ -107,6 +120,11 @@ exports.getTasksByProject = async (userId, projectId) => {
     createdAt: t.createdAt,
     updatedAt: t.updatedAt
   }));
+
+  // Salva o resultado no cache
+  await utils.setCache(cacheKey, tasksMap);
+
+  return tasksMap;
 };
 
 /**
@@ -123,11 +141,24 @@ exports.getTasksByProject = async (userId, projectId) => {
  * @throws {Error} Se o usuário (`userId`) não for encontrado.
  */
 exports.getTaskById = async (userId, taskId) => {
+  // Define uma chave única para este recurso no cache
+  const cacheKey = `task:${taskId}`;
+
   // Verifica se o usuário existe
   await utils.checkUser(userId);
 
+  // Tenta buscar do cache primeiro
+  const cachedTask = await utils.getCache(cacheKey);
+  
+  if (cachedTask) return cachedTask;
+
   // Retorna a tarefa identificada pelo seu ID.
-  return await Task.findById(taskId);
+  const task = await Task.findById(taskId);
+
+  // Salva o resultado no cache
+  await utils.setCache(cacheKey, task);
+
+  return task;
 };
 
 /**
@@ -224,7 +255,18 @@ exports.updateTask = async (userId, taskId, taskData) => {
 
   // Retorna a tarefa atualidada. A opção { new: true } garante que o documento retornado 
   // seja a versão atualizada
-  return await Task.findByIdAndUpdate(taskId, taskData, { new: true });
+  const result = await Task.findByIdAndUpdate(taskId, taskData, { new: true });
+
+  // Invalida o cache no Redis
+  if (result) {
+     utils.invalidateCache('task', taskId);
+     utils.invalidateCache('tasks', task.projectId);
+     utils.invalidateCache('taskHistory', taskId);
+     utils.invalidateCache('project', 'all');
+     utils.invalidateCache('project', task.projectId);
+  }
+
+  return result;
 };
 
 // Atualiza o status de uma tarefa.
@@ -275,7 +317,20 @@ exports.updateTaskStatus = async (userId, taskId, taskData) => {
 
   // Retorna a tarefa atualidada. A opção { new: true } garante que o documento retornado 
   // seja a versão atualizada
-  return await Task.findByIdAndUpdate(taskId, { status: taskData.status }, { new: true });
+  const result = await Task.findByIdAndUpdate(taskId, { status: taskData.status }, { new: true });
+
+  // Invalida o cache no Redis
+  if (result) {
+    utils.invalidateCache('task', taskId);
+    utils.invalidateCache('tasks', task.projectId);
+    utils.invalidateCache('taskHistory', taskId);
+    utils.invalidateCache('project', 'all');
+    utils.invalidateCache('project', task.projectId);
+
+     if (taskData.status = 'Concluida') utils.invalidateCache('report', 'performance');
+  }
+
+  return result;
 };
 
 /**
@@ -313,7 +368,18 @@ exports.addComment = async (userId, taskId, taskData) => {
 
   // Retorna a tarefa atualidada. A opção { new: true } garante que o documento retornado 
   // seja a versão atualizada
-  return await Task.findByIdAndUpdate(taskId, { }, { new: true });
+  const result = await Task.findByIdAndUpdate(taskId, { }, { new: true });
+
+  // Invalida o cache no Redis
+  if (result) {
+    utils.invalidateCache('task', taskId);
+    utils.invalidateCache('tasks', task.projectId);
+    utils.invalidateCache('taskHistory', taskId);
+    utils.invalidateCache('project', 'all');
+    utils.invalidateCache('project', task.projectId);
+  }
+
+  return result;
 };
 
 /**
@@ -332,11 +398,27 @@ exports.deleteTask = async (userId, taskId) => {
   // Verifica se o usuário existe
   await utils.checkUser(userId);
   
+  // Verifica se a tarefa existe
+  const task = await utils.checkTask(taskId);
+
+  if (!task) return;
+
   // Remover todos os registros de histórico associados à tarefa.
   await TaskHistory.deleteMany({ taskId: taskId });
 
   // Remover a tarefa principal.
-  return await Task.findByIdAndDelete(taskId);
+  const result = await Task.findByIdAndDelete(taskId);
+
+  // Invalida o cache no Redis
+  if (result) {
+    utils.invalidateCache('task', taskId);
+    utils.invalidateCache('tasks', task.projectId);
+    utils.invalidateCache('taskHistory', taskId);
+    utils.invalidateCache('project', 'all');
+    utils.invalidateCache('project', task.projectId);
+  }
+
+  return result;
 };
 
 /**
@@ -355,17 +437,25 @@ exports.deleteTask = async (userId, taskId) => {
  * @throws {Error} Se a tarefa (`taskId`) não for encontrada.
  */
 exports.getTaskHistory = async (userId, taskId) => {
+  // Define uma chave única para este recurso no cache
+  const cacheKey = `taskHistory:${taskId}`;
+
   // Verifica se o usuário existe
   await utils.checkUser(userId);
 
   // Verifica se a tarefa existe
   const task = await utils.checkTask(taskId);
   
+  // Tenta buscar do cache primeiro
+  const cachedTaskHistory = await utils.getCache(cacheKey);
+  
+  if (cachedTaskHistory) return cachedTaskHistory;
+
   // Obtém a lista de tarefas do projeto
-  var taskHistory = await TaskHistory.find({ taskId: taskId });
+  const taskHistory = await TaskHistory.find({ taskId: taskId });
 
   // Formatação da saída dos campos
-  return taskHistory.map(h => ({
+  const taskHistoryMap = taskHistory.map(h => ({
     id: h.Id,
     changeType: h.changeType,
     fieldName: h.fieldName,
@@ -375,4 +465,9 @@ exports.getTaskHistory = async (userId, taskId) => {
     createdAt: h.createdAt,
     userId: h.userId
   }));
+
+  // Salva o resultado no cache
+  await utils.setCache(cacheKey, taskHistoryMap);
+
+  return taskHistoryMap;
 };

@@ -7,6 +7,7 @@
 const User = require('../models/userModel');
 const Task = require('../models/taskModel');
 const Project = require('../models/projectModel');
+const redisClient = require('../config/redisClient');
 
 // Verifica se o ID do usuário é válido e se está cadastrado.
 
@@ -169,3 +170,56 @@ exports.checkTaskStatus = (newValue, oldValue) => {
   return true;
 };
 
+/**
+ * Função que verifica se a chave está armazenada no Redis (cache).
+ *
+ * @param {string} cacheKey - Chave do objeto no cache.
+ * 
+ * @returns {boolean} Retorna o objeto se estiver no cache, caso contrário null.
+ */
+exports.getCache = async (cacheKey) => {
+  
+  // Tenta buscar a chave no cache
+  const result = await redisClient.get(cacheKey);
+  
+  if (result) {
+    console.log(`CACHE HIT para a chave: ${cacheKey}`);
+    
+    // O dado no Redis é uma string, então é necessário fazer o parse de volta para JSON
+    return JSON.parse(result);
+  }
+  else {
+    console.log(`CACHE MISS para a chave: ${cacheKey}. Buscando no MongoDB...`);
+
+    return null;
+  }
+};
+
+/**
+ * Função que salva o objeto no cache para a próxima vez. Este cache expira após 1 hora
+ * (3600 segundos).
+ *
+ * @param {string} cacheKey - Chave do objeto no cache.
+ * @param {object} cacheValue - Objeto a ser armazenado no cache.
+ */
+exports.setCache = async (cacheKey, cacheValue) => {
+  
+  if (cacheValue) {
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(cacheValue));
+  }
+};
+
+/**
+ * Função que invalida o cache no Redis, removendo as chaves armazenadas previamente.
+ *
+ * @param {string} prefix - Prefixo da chave: 'user', 'project', 'task'.
+ * @param {string} id - Id do objeto armazenado no cache.
+ */
+exports.invalidateCache = async (prefix, id) => {
+
+  const cacheKeyId = `${prefix}:${id}`;
+
+  await redisClient.del(cacheKeyId);
+    
+  console.log(`CACHE INVALIDATED para a chave: ${cacheKeyId}`);
+};

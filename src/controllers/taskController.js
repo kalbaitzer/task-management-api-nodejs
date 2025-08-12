@@ -113,7 +113,7 @@ exports.getTasksByProject = async (req, res, next) => {
 exports.getTaskById = async (req, res, next) => {
   try {
     // Obtém a tarefa pelo seu ID
-    const task = await taskService.getTaksById(req.headers['x-user-id'], req.params.id);
+    const task = await taskService.getTaskById(req.headers['x-user-id'], req.params.id);
     
     // Tratamento do caso "não encontrado" no controlador.
     if (!task) {

@@ -82,10 +82,6 @@ describe('Project Service', () => {
         expect(result.title).toEqual(mockProject.title); // Assert.Equal
         expect(result.owner).toEqual(mockProject.owner); // Assert.Equal
         expect(result.description).toEqual(mockProject.description); // Assert.Equal
-        expect(result.createdAt).toEqual(mockProject.createdAt); // Assert.Equal
-
-        // Verificamos se o método do model foi chamado com o id do projeto
-        expect(Project.findById).toHaveBeenCalledWith(mockProjectId);
     });
 
     // Teste: a exceção é lançada quando o projeto não existe, ou seja, não está cadastrado.

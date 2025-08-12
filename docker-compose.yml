@@ -21,6 +21,16 @@ services:
     volumes:
       - mongo-data:/data/db # Cria um volume para persistir os dados do banco
 
+  # Serviço do Banco de Dados Redis (cache)
+  redis:
+    image: redis:7-alpine # Imagem oficial e leve do Redis
+    container_name: redis
+    ports:
+      - "6379:6379" # Expõe a porta padrão do Redis
+    volumes:
+      - redis-data:/data
+
 # Define o volume para persistência de dados do MongoDB
 volumes:
   mongo-data:
+  redis-data:

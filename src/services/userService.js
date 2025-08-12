@@ -5,6 +5,7 @@
  */
 
 const User = require('../models/userModel');
+const utils = require('../middlewares/utils');
 
 /**
  * Cria um novo usuário no banco de dados, de forma a facilitar o teste da aplicação.
@@ -34,6 +35,9 @@ exports.createUser = async (userData) => {
   // Salva o objeto no banco de dados
   await user.save();
 
+  // Invalida o cache no Redis
+  utils.invalidateCache('user', 'all');
+
   // Retorna o usuário cadastrado
   return user;
 };
@@ -47,8 +51,21 @@ exports.createUser = async (userData) => {
  * { id, name, email, role, createdAt, updatedAt }
  */
 exports.getAllUsers = async () => {
+  // Define uma chave única para este recurso no cache
+  const cacheKey = `user:all`;
+
+  // Tenta buscar do cache primeiro
+  const cachedUsers = await utils.getCache(cacheKey);
+  
+  if (cachedUsers) return cachedUsers;
+
   // Retorna todos os usuários
-  return await User.find();
+  const users = await User.find();
+
+  // Salva o resultado no cache
+  await utils.setCache(cacheKey, users);
+
+  return users;
 };
 
 /**
@@ -61,8 +78,21 @@ exports.getAllUsers = async () => {
  * encontrado ou `null` se nenhum usuário for encontrado com o ID fornecido.
  */
 exports.getUserById = async (id) => {
+  // Define uma chave única para este recurso no cache
+  const cacheKey = `user:${id}`;
+
+  // Tenta buscar do cache primeiro
+  const cachedUser = await utils.getCache(cacheKey);
+  
+  if (cachedUser) return cachedUser
+
   // Retorna o usuário específico pelo seu ID
-  return await User.findById(id);
+  const user = await User.findById(id);
+
+  // Salva o resultado no cache
+  await utils.setCache(cacheKey, user);
+
+  return user;
 };
 
 // Atualiza um usuário específico pelo seu ID.
@@ -78,10 +108,17 @@ exports.getUserById = async (id) => {
  * atualizado ou `null` se nenhum usuário for encontrado.
  */
 exports.updateUser = async (id, userData) => {
-
   // Retorna o usuário atualidado. A opção { new: true } garante que o documento retornado 
   // seja a versão atualizada
-  return await User.findByIdAndUpdate(id, userData, { new: true });
+  const result = await User.findByIdAndUpdate(id, userData, { new: true });
+
+  // Invalida o cache no Redis
+  if (result) {
+    utils.invalidateCache('user', 'all');
+    utils.invalidateCache('user', id);
+  }
+
+  return result;
 };
 
 /**
@@ -94,5 +131,14 @@ exports.updateUser = async (id, userData) => {
  * removido, ou `null` se nenhum usuário foi encontrado com o ID fornecido.
  */
 exports.deleteUser = async (id) => {
-  return await User.findByIdAndDelete(id);
+  // Remover o usuário.
+  const result = await User.findByIdAndDelete(id);
+
+  // Invalida o cache no Redis
+  if (result) {
+    utils.invalidateCache('user', 'all');
+    utils.invalidateCache('user', id);
+  }
+
+  return result;
 };
