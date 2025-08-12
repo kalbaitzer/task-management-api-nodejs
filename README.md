@@ -2,6 +2,7 @@
 
 ![Node.js](https://img.shields.io/badge/22%2B-x?style=flat&logo=Node.js&logoColor=green&label=Node.js&color=green)
 ![MongoDB](https://img.shields.io/badge/MongoDB-8-green)
+![Redis](https://img.shields.io/badge/-Redis%205-DC382D?logo=Redis&logoColor=FFF)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue)
 ![Arquitetura](https://img.shields.io/badge/Arquitetura-Clean-orange)
 ![Visual Studio Code](https://custom-icon-badges.demolab.com/badge/Visual%20Studio%20Code-0078d7.svg?logo=vsc&logoColor=white)
@@ -11,6 +12,8 @@
 Este repositório contém o código-fonte de uma API RESTful completa para um sistema de gerenciamento de tarefas. A API permite que os usuários organizem seus projetos e tarefas diárias, colaborem com colegas e monitorem o progresso.
 
 O projeto foi desenvolvido com **Node.js** e **MongoDB**, seguindo os princípios da **Clean Architecture** para garantir um código limpo, testável, escalável e de fácil manutenção. Toda a aplicação, incluindo o banco de dados, está pronta para ser executada em contêineres **Docker**.
+
+Foi incluído cache para consultas usando o banco de dados em memória **Redis**.
 
 ---
 
@@ -33,6 +36,7 @@ A API implementa as seguintes regras de negócio:
 - **Backend**: Node.js 22 e Express.js 5
 - **Persistência de Dados**: Mongoose (ODM - Object Document Mapper)
 - **Banco de Dados**: MongoDB 8 (Não-Relacional, Orientado a Documentos)
+- **Cache**: Redis 5
 - **Arquitetura**: Clean Architecture
 - **Conteinerização**: Docker
 - **Ambiente de Desenvolvimento**: Visual Studio Code
@@ -122,13 +126,13 @@ Esta é a maneira mais simples e recomendada de executar toda a aplicação.
    # Serviço da API Node.js
    app:
        build: .  # Constrói a imagem a partir do Dockerfile no diretório atual
-       container_name: task-management-api
+       container_name: task-management-api-nodejs
        ports:
-       - "3000:3000" # Mapeia a porta 3000 do contêiner para a porta 3000 da sua máquina
+       - "3000:3000"          # Mapeia a porta 3000 do contêiner para a porta 3000 da sua máquina
        env_file:
-       - .env.docker # Carrega as variáveis de ambiente do arquivo .env
+       - ./config/.env.docker # Carrega as variáveis de ambiente do arquivo .env
        depends_on:
-       - mongo       # Garante que o contêiner do MongoDB inicie antes da API
+       - mongo                # Garante que o contêiner do MongoDB inicie antes da API
 
    # Serviço do Banco de Dados MongoDB
    mongo:
@@ -139,9 +143,19 @@ Esta é a maneira mais simples e recomendada de executar toda a aplicação.
        volumes:
        - mongo-data:/data/db # Cria um volume para persistir os dados do banco
 
+   # Serviço do Banco de Dados Redis (cache)
+   redis:
+       image: redis:7-alpine # Imagem oficial e leve do Redis
+       container_name: redis
+       ports:
+       - "6379:6379" # Expõe a porta padrão do Redis
+       volumes:
+       - redis-data:/data
+
    # Define o volume para persistência de dados do MongoDB
    volumes:
    mongo-data:
+   redis-data:
    ```
    Este arquivo está disponível na raiz do projeto.
 
@@ -175,28 +189,38 @@ Esta é a maneira mais simples e recomendada de executar toda a aplicação.
    services:
    # Serviço da API Node.js, baixado do Docker Hub
    app:
-   # O Docker irá baixar esta imagem automaticamente se ela não existir localmente.
-   image: kalbaitzer/task-management-api-nodejs:1.0
-   container_name: task-management-api-nodejs
-   ports:
-       - "3000:3000" # Mapeia a porta 3000 do contêiner para a porta 3000 da sua máquina
-   env_file:
-       - .env.docker # Carrega as variáveis de ambiente do arquivo .env
-   depends_on:
-       - mongo       # Garante que o contêiner do MongoDB inicie antes da API
+       # O Docker irá baixar esta imagem automaticamente se ela não existir localmente.
+       container_name: task-management-api-nodejs
+       image: kalbaitzer/task-management-api-nodejs:1.0
+       ports:
+       - "3000:3000"          # Mapeia a porta 3000 do contêiner para a porta 3000 da sua máquina
+       env_file:
+       - ./config/.env.docker # Carrega as variáveis de ambiente do arquivo .env
+       depends_on:
+       - mongo                # Garante que o contêiner do MongoDB inicie antes da API
 
    # Serviço do Banco de Dados MongoDB
    mongo:
-   image: mongo:latest # Usa a imagem oficial mais recente do MongoDB
-   container_name: mongodb
-   ports:
+       image: mongo:latest # Usa a imagem oficial mais recente do MongoDB
+       container_name: mongodb
+       ports:
        - "27017:27017" # Mapeia a porta padrão do MongoDB
-   volumes:
+       volumes:
        - mongo-data:/data/db # Cria um volume para persistir os dados do banco
+
+   # Serviço do Banco de Dados Redis (cache)
+   redis:
+       image: redis:7-alpine # Imagem oficial e leve do Redis
+       container_name: redis
+       ports:
+       - "6379:6379" # Expõe a porta padrão do Redis
+       volumes:
+       - redis-data:/data
 
    # Define o volume para persistência de dados do MongoDB
    volumes:
    mongo-data:
+   redis-data:
    ```
    O conteúdo deste arquivo é diferente do usado no computador de desenvolvimento.
    Este arquivo está disponível na raiz do projeto com o nome `docker-compose-runtime.yml`.
