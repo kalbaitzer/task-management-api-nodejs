@@ -3,10 +3,10 @@
 ![Node.js](https://img.shields.io/badge/22%2B-x?style=flat&logo=Node.js&logoColor=green&label=Node.js&color=green)
 ![MongoDB](https://img.shields.io/badge/MongoDB-8-green)
 ![Redis](https://img.shields.io/badge/Redis-5-red)
-![Grafana](https://img.shields.io/badge/-Grafana-5f5f5f?style=flat&logo=grafana&labelColor=ffffff)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue)
 ![Arquitetura](https://img.shields.io/badge/Arquitetura-Clean-orange)
 ![Visual Studio Code](https://custom-icon-badges.demolab.com/badge/Visual%20Studio%20Code-0078d7.svg?logo=vsc&logoColor=white)
+![Grafana](https://img.shields.io/badge/-Grafana-5f5f5f?style=flat&logo=grafana&labelColor=ffffff)
 
 ## Sobre o Projeto
 
