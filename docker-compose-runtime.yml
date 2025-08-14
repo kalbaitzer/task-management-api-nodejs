@@ -13,6 +13,7 @@ services:
       - ./config/.env.docker # Carrega as variáveis de ambiente do arquivo .env
     depends_on:
       - mongo                # Garante que o contêiner do MongoDB inicie antes da API
+      - redis                # Garante que o contêiner do Redis inicie antes da API
 
   # Serviço do Banco de Dados MongoDB
   mongo:
@@ -32,7 +33,32 @@ services:
     volumes:
       - redis-data:/data
 
+  # Serviço do Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090" # Porta padrão do Prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml # Mapeia nosso arquivo de config
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    depends_on:
+      - app # Garante que o Prometheus só inicie depois da nossa API
+
+  # Serviço do Grafana
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3001:3000" # Mapeia a porta 3000 do Grafana para 3001 na nossa máquina (para não conflitar com a API)
+    volumes:
+      - grafana-data:/var/lib/grafana # Volume para persistir dashboards e configurações
+    depends_on:
+      - prometheus
+
 # Define o volume para persistência de dados do MongoDB
 volumes:
   mongo-data:
   redis-data:
+  grafana-data:

@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const promBundle = require('express-prom-bundle');
 
 // Importação das rotas da aplicação
 const userRoutes = require('./src/routes/userRoutes');
@@ -23,7 +24,18 @@ dotenv.config({ path: path.join('./config', '.env') });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 3. CONEXÃO COM O BANCO DE DADOS
+// 3. CONFIGURAÇÃO DAS MÉTRICAS COM PROM-CLIENT (NOVA SEÇÃO)
+const metricsMiddleware = promBundle({
+  includeMethod: true,
+  includePath: true,
+  includeStatusCode: true,
+  includeUp: true,
+  promClient: {
+    collectDefaultMetrics: {}
+  }
+});
+
+// 4. CONEXÃO COM O BANCO DE DADOS
 // Usamos uma função assíncrona para garantir que a conexão seja estabelecida
 const connectDB = async () => {
   try {
@@ -38,12 +50,15 @@ const connectDB = async () => {
 
 connectDB(); // Executa a função de conexão
 
-// 4. CONFIGURAÇÃO DOS MIDDLEWARES
+// 5. CONFIGURAÇÃO DOS MIDDLEWARES
 // Permite que o frontend (em outro domínio) acesse sua API
 app.use(cors());
 
 // Permite que o Express entenda requisições com corpo em formato JSON
 app.use(express.json());
+
+// Middleware de métricas
+app.use(metricsMiddleware);
 
 // Middleware simples para logar as requisições (opcional, mas útil para debug)
 app.use((req, res, next) => {
@@ -51,14 +66,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// 5. ROTAS DA API
-// Define um prefixo para todas as rotas de cada entidade
+// 6. ROTAS DA API
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/reports', reportRoutes);
 
-// 6. TRATAMENTO DE ERROS CENTRALIZADO
+// 7. TRATAMENTO DE ERROS CENTRALIZADO
 // Middleware para rotas não encontradas (404)
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Rota não encontrada.' });
@@ -73,7 +87,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 7. INICIALIZAÇÃO DO SERVIDOR
+// 8. INICIALIZAÇÃO DO SERVIDOR
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta http://localhost:${PORT}`);
 });

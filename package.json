@@ -12,6 +12,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "express-prom-bundle": "^8.0.0",
     "jest": "^30.0.5",
     "mongoose": "^8.17.0",
     "redis": "^5.8.0",
