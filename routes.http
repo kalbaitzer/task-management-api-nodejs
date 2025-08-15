@@ -17,8 +17,8 @@ POST http://localhost:3000/api/users
 Content-Type: application/json
 
 {
-  "name": "User 1",
-  "email": "user1@gmail.com",
+  "name": "User 2",
+  "email": "user2@gmail.com",
   "role": "User"
 }
 
@@ -26,7 +26,7 @@ Content-Type: application/json
 GET http://localhost:3000/api/users
 
 ### getUserById
-GET http://localhost:3000/api/users/c437b4db-7473-49be-a674-13474a1f1b31
+GET http://localhost:3000/api/users/aa2754ed-22b0-43cc-b9ff-8093a11058a6
 
 ### updateUser
 PUT http://localhost:3000/api/users/f3f92bfe-1a08-44d8-a222-43ff72a8ae4b

@@ -10,7 +10,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
-const promBundle = require('express-prom-bundle');
+const responseTime = require('response-time');
+const promClient = require('prom-client');
 
 // Importação das rotas da aplicação
 const userRoutes = require('./src/routes/userRoutes');
@@ -24,15 +25,28 @@ dotenv.config({ path: path.join('./config', '.env') });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 3. CONFIGURAÇÃO DAS MÉTRICAS COM PROM-CLIENT (NOVA SEÇÃO)
-const metricsMiddleware = promBundle({
-  includeMethod: true,
-  includePath: true,
-  includeStatusCode: true,
-  includeUp: true,
-  promClient: {
-    collectDefaultMetrics: {}
-  }
+// 3. CONFIGURAÇÃO DAS MÉTRICAS COM PROM-CLIENT
+// Cria um registro central para todas as nossas métricas.
+const register = new promClient.Registry();
+
+// Adiciona as métricas padrão do Node.js (uso de memória, CPU, etc.) ao nosso registro.
+promClient.collectDefaultMetrics({ register });
+
+// Cria um contador para o total de requisições HTTP.
+const httpRequestsTotal = new promClient.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests made.',
+  labelNames: ['method', 'route', 'code'], // As "dimensões" que queremos registrar.
+  registers: [register],
+});
+
+// Cria um histograma para medir a duração das requisições.
+const httpRequestDurationSeconds = new promClient.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in seconds.',
+  labelNames: ['method', 'route', 'code'],
+  registers: [register],
+  buckets: [0.1, 0.5, 1, 1.5, 2, 5] // Buckets de tempo em segundos.
 });
 
 // 4. CONEXÃO COM O BANCO DE DADOS
@@ -57,8 +71,30 @@ app.use(cors());
 // Permite que o Express entenda requisições com corpo em formato JSON
 app.use(express.json());
 
-// Middleware de métricas
-app.use(metricsMiddleware);
+// Middleware `response-time` para medir a duração e atualizar as métricas.
+// Ele será executado para cada requisição que passar por ele.
+app.use(responseTime((req, res, time) => {
+  // A requisição já foi processada e a resposta está sendo enviada.
+  // Agora, registramos as métricas.
+
+  // Usamos req.route.path para obter a rota normalizada (ex: /api/users/:id)
+  // e não a URL completa (ex: /api/users/123).
+  // Se a rota não for encontrada, req.route será undefined, então usamos req.path.
+  const route = req.route ? req.route.path : req.path;
+  
+  // Preenchemos as labels com os dados da requisição/resposta.
+  const labels = {
+    method: req.method,
+    route: route,
+    code: res.statusCode
+  };
+
+  // Incrementa o contador de requisições totais.
+  httpRequestsTotal.inc(labels);
+
+  // Registra a duração da requisição em segundos.
+  httpRequestDurationSeconds.observe(labels, time / 1000);
+}));
 
 // Middleware simples para logar as requisições (opcional, mas útil para debug)
 app.use((req, res, next) => {
@@ -67,6 +103,16 @@ app.use((req, res, next) => {
 });
 
 // 6. ROTAS DA API
+// A rota /metrics DEVE ser definida aqui para expor os dados que o Prometheus irá coletar.
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (ex) {
+    res.status(500).end(ex);
+  }
+});
+
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
